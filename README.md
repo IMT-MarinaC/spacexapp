@@ -1,16 +1,17 @@
-# spacexapp
+# SpaceXApp
 
-A new Flutter project.
+A Space X IMT Flutter project.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+Flutter (Dart) doit être installé sur le pc d'où l'appli est lancée :
+https://docs.flutter.dev/install/manual .
+Bien suivre les indications (DL, unzip, ajouter le /bin au Path de l'utilisateur).
 
-A few resources to get you started if this is your first Flutter project:
+Dans Android Studio, ajouter le path du `dart-sdk` dans le path demandé dans les paramètre.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Pour installer les dépendances déclarées dans le projet (`pubspec.yaml`), lancer la commande :
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+```
+flutter pub get
+```
