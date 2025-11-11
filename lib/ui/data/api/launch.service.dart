@@ -5,7 +5,6 @@ import 'package:spacexapp/data/model/launch.model.dart';
 
 const String _baseUrl = 'https://api.spacexdata.com/v4/launches';
 
-/// Récupère tous les lancements disponibles
 Future<List<Launch>> getAll() async {
   try {
     final httpResponse = await http.get(Uri.parse(_baseUrl));
@@ -36,7 +35,7 @@ Future<List<Launch>> getAll() async {
   }
 }
 
-/// Récupère un seul lancement via son ID
+// Récupère un seul lancement via son ID
 Future<Launch?> getById(String id) async {
   try {
     final httpResponse = await http.get(Uri.parse('$_baseUrl/$id'));
