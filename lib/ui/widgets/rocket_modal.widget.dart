@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:spacexapp/data/model/rocket.model.dart';
+import 'package:spacexapp/ui/widgets/rocket_detail_card.dart';
 
 import '../data/api/rocket.service.dart';
 
@@ -7,7 +8,7 @@ Future<void> showRocketModal(BuildContext context, String rocketId) async {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
-    backgroundColor: Colors.black.withValues(alpha: 0.9),
+    backgroundColor: Colors.black,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
     ),
@@ -54,37 +55,63 @@ Future<void> showRocketModal(BuildContext context, String rocketId) async {
                     ),
                   ),
                   const SizedBox(height: 8),
+
                   Center(
                     child: Text(
                       'Type : ${rocket.type}',
                       style: const TextStyle(color: Colors.grey),
                     ),
                   ),
-                  const Divider(color: Colors.white30, height: 24),
 
-                  Text(
-                    'Pays : ${rocket.country}',
-                    style: const TextStyle(color: Colors.white),
+                  const Divider(color: Colors.grey, height: 24),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Pays', style: const TextStyle(color: Colors.grey)),
+                      Text(rocket.country),
+                    ],
                   ),
-                  Text(
-                    'Entreprise : ${rocket.company}',
-                    style: const TextStyle(color: Colors.white),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Entreprise',
+                        style: const TextStyle(color: Colors.grey),
+                      ),
+                      Text(rocket.company),
+                    ],
                   ),
-                  Text(
-                    'Étages : ${rocket.stages}',
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                  Text(
-                    'Boosters : ${rocket.boosters}',
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                  Text(
-                    'Hauteur : ${rocket.heightMeters} m',
-                    style: const TextStyle(color: Colors.white),
-                  ),
-                  Text(
-                    'Masse : ${rocket.massKg} kg',
-                    style: const TextStyle(color: Colors.white),
+                  const SizedBox(height: 16),
+                  Wrap(
+                    spacing: 10,
+                    runSpacing: 10,
+                    children: [
+                      RocketDetailCard(
+                        name: 'Hauteur',
+                        data: rocket.heightMeters.toString(),
+                        unit: 'm',
+                      ),
+                      RocketDetailCard(
+                        name: 'Diamètre',
+                        data: rocket.diameterMeters.toString(),
+                        unit: 'm',
+                      ),
+                      RocketDetailCard(
+                        name: 'Masse',
+                        data: rocket.massKg > 1000
+                            ? (rocket.massKg / 1000).toString()
+                            : rocket.massKg.toString(),
+                        unit: rocket.massKg > 1000 ? 't' : 'kg',
+                      ),
+                      RocketDetailCard(
+                        name: rocket.stages > 1 ? "Étages" : "Étage",
+                        data: rocket.stages.toString(),
+                      ),
+                      RocketDetailCard(
+                        name: rocket.boosters > 1 ? "Boosters" : "Booster",
+                        data: rocket.boosters.toString(),
+                      ),
+                    ],
                   ),
                   const SizedBox(height: 16),
                   Text(
@@ -98,7 +125,10 @@ Future<void> showRocketModal(BuildContext context, String rocketId) async {
                         backgroundColor: Colors.white,
                       ),
                       onPressed: () => Navigator.pop(context),
-                      child: const Text('Fermer'),
+                      child: const Text(
+                        'Fermer',
+                        style: TextStyle(color: Colors.black),
+                      ),
                     ),
                   ),
                 ],

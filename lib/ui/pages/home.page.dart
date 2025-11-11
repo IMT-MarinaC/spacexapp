@@ -29,7 +29,11 @@ class _HomePageState extends State<HomePage> {
     final TextStyle style = Theme.of(context).textTheme.bodyMedium!;
     return Scaffold(
       appBar: AppBar(
-        title: const Text("SpaceX Launches App 🚀"),
+        title: Image.asset(
+          'lib/assets/images/spacex_logo_white.png',
+          width: 200,
+        ),
+
         actions: [
           IconButton(
             icon: Icon(isListView ? Icons.grid_view : Icons.list),

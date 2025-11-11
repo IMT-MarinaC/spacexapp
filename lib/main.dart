@@ -11,10 +11,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) => MaterialApp(
     debugShowCheckedModeBanner: false,
-    title: 'Space X App',
+    title: 'Space X Launches App',
     theme: ThemeData(
+      brightness: Brightness.dark,
       fontFamily: 'Roboto',
-      colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
       useMaterial3: true,
     ),
     home: HomePage(),

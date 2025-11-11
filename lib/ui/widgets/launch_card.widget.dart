@@ -12,24 +12,24 @@ class LaunchCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final TextStyle style = Theme.of(context).textTheme.bodyMedium!;
+    final TextStyle style = Theme.of(context).textTheme.bodySmall!;
     return Container(
       margin: const EdgeInsets.all(8),
       child: Stack(
         children: [
-          // 🎨 Dégradé de fond
+          // Dégradé
           Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(8.0),
               gradient: const LinearGradient(
-                colors: [Colors.white54, Colors.white70],
+                colors: [Colors.white38, Colors.blueGrey],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
             ),
           ),
 
-          // Flou
+          // FLou
           ClipRRect(
             borderRadius: BorderRadius.circular(8.0),
             child: BackdropFilter(
@@ -48,6 +48,8 @@ class LaunchCard extends StatelessWidget {
                   ),
                 );
               },
+
+              // Data
               child: Column(
                 children: [
                   Row(

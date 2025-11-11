@@ -39,16 +39,18 @@ class _LaunchDetailPageState extends State<LaunchDetailPage> {
             leading: Container(
               margin: const EdgeInsets.all(8),
               decoration: const BoxDecoration(
-                color: Colors.grey,
+                borderRadius: BorderRadius.all(Radius.circular(8)),
+                color: Colors.white,
                 shape: BoxShape.rectangle,
               ),
-              child: const BackButton(color: Colors.white),
+              child: const BackButton(color: Colors.black),
             ),
+            // Favoris
             actions: [
               IconButton(
                 icon: Icon(
                   isFavorite ? Icons.favorite : Icons.favorite_border,
-                  color: isFavorite ? Colors.red : Colors.black,
+                  color: isFavorite ? Colors.red : Colors.white,
                 ),
                 onPressed: () {
                   setState(() {
@@ -64,7 +66,7 @@ class _LaunchDetailPageState extends State<LaunchDetailPage> {
                               ? TextSpan(
                                   style: const TextStyle(
                                     color: Colors.white,
-                                    fontSize: 16,
+                                    fontSize: 12,
                                   ),
                                   children: [
                                     TextSpan(
@@ -81,7 +83,7 @@ class _LaunchDetailPageState extends State<LaunchDetailPage> {
                               : TextSpan(
                                   style: const TextStyle(
                                     color: Colors.white,
-                                    fontSize: 16,
+                                    fontSize: 12,
                                   ),
                                   children: [
                                     TextSpan(
@@ -116,10 +118,10 @@ class _LaunchDetailPageState extends State<LaunchDetailPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Logo / patch de mission
-                  if (widget.launch.links?.patch?.large != null)
+                  if (widget.launch.links.patch?.large != null)
                     Center(
                       child: Image.network(
-                        widget.launch.links!.patch!.large!,
+                        widget.launch.links.patch!.large!,
                         height: 150,
                       ),
                     ),
@@ -129,6 +131,7 @@ class _LaunchDetailPageState extends State<LaunchDetailPage> {
                   // Nom du lancement et de la fusée
                   Row(
                     children: [
+                      // nom lancement
                       Text(
                         widget.launch.name,
                         style: Theme.of(context).textTheme.headlineMedium,
@@ -155,18 +158,19 @@ class _LaunchDetailPageState extends State<LaunchDetailPage> {
                             );
                           }
 
+                          // Fusée
                           final rocket = snapshot.data!;
                           return ActionChip(
                             avatar: const Icon(
                               Icons.rocket_launch,
-                              color: Colors.white,
-                              size: 18,
+                              color: Colors.black,
+                              size: 16,
                             ),
                             label: Text(
                               rocket.name ?? "...",
-                              style: const TextStyle(color: Colors.white),
+                              style: const TextStyle(color: Colors.black),
                             ),
-                            backgroundColor: Colors.blueAccent,
+                            backgroundColor: Colors.white,
                             onPressed: () =>
                                 showRocketModal(context, widget.launch.rocket),
                           );
@@ -192,40 +196,58 @@ class _LaunchDetailPageState extends State<LaunchDetailPage> {
                     ),
                   ),
 
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 20),
 
                   // Description
                   if (widget.launch.details != null)
-                    Text(widget.launch.details!),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          'Description',
+                          style: TextStyle(color: Colors.grey),
+                        ),
+                        Text(widget.launch.details!),
+                      ],
+                    ),
 
-                  const SizedBox(height: 16),
+                  const SizedBox(height: 20),
 
-                  // Liens utiles
+                  // Liens
                   Wrap(
-                    spacing: 8,
+                    spacing: 5,
                     children: [
-                      if (widget.launch.links?.webcast != null)
+                      if (widget.launch.links.webcast != null)
                         ElevatedButton.icon(
                           icon: const Icon(Icons.play_arrow),
-                          label: const Text("Webcast"),
+                          label: const Text(
+                            "Webcast",
+                            style: TextStyle(fontSize: 12),
+                          ),
                           onPressed: () => launchUrl(
-                            Uri.parse(widget.launch.links!.webcast!),
+                            Uri.parse(widget.launch.links.webcast!),
                           ),
                         ),
-                      if (widget.launch.links?.article != null)
+                      if (widget.launch.links.article != null)
                         ElevatedButton.icon(
                           icon: const Icon(Icons.article),
-                          label: const Text("Article"),
+                          label: const Text(
+                            "Article",
+                            style: TextStyle(fontSize: 12),
+                          ),
                           onPressed: () => launchUrl(
-                            Uri.parse(widget.launch.links!.article!),
+                            Uri.parse(widget.launch.links.article!),
                           ),
                         ),
-                      if (widget.launch.links?.wikipedia != null)
+                      if (widget.launch.links.wikipedia != null)
                         ElevatedButton.icon(
                           icon: const Icon(Icons.public),
-                          label: const Text("Wikipedia"),
+                          label: const Text(
+                            "Wikipedia",
+                            style: TextStyle(fontSize: 12),
+                          ),
                           onPressed: () => launchUrl(
-                            Uri.parse(widget.launch.links!.wikipedia!),
+                            Uri.parse(widget.launch.links.wikipedia!),
                           ),
                         ),
                     ],
