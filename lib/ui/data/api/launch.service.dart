@@ -27,7 +27,6 @@ Future<List<Launch>> getAll() async {
       }
     }
 
-    print("✅ Nombre de lancements récupérés : ${launches.length}");
     return launches;
   } catch (e) {
     print('❌ Erreur lors de la récupération des lancements : $e');

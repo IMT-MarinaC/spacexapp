@@ -73,8 +73,8 @@ class _HomePageState extends State<HomePage> {
                       Padding(
                         padding: const EdgeInsets.all(16.0),
                         child: Text(
-                          'Nombre de lancements : ${launches.length}',
-                          style: style.copyWith(fontWeight: FontWeight.bold),
+                          'Nombre de lancements : ${launches.length}.',
+                          style: style.copyWith(color: Colors.grey),
                         ),
                       ),
                       Expanded(
@@ -93,7 +93,6 @@ class _HomePageState extends State<HomePage> {
                                 )
                               : GridView.count(
                                   crossAxisCount: 2,
-                                  // nombre de colonnes
                                   crossAxisSpacing: 8,
                                   mainAxisSpacing: 8,
                                   padding: const EdgeInsets.all(8),
