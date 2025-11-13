@@ -2,18 +2,23 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
-import '../../../data/model/rocket.model.dart';
+import '../../../data/model/rocket/rocket.model.dart';
 
-Future<Rocket> getRocketById(String id) async {
-  final url = Uri.parse('https://api.spacexdata.com/v4/rockets/$id');
-  final response = await http.get(url);
+class RocketService {
+  final String baseUrl = 'https://api.spacexdata.com/v4/rockets';
 
-  if (response.statusCode == 200) {
-    final jsonData = json.decode(response.body);
-    return Rocket.fromJson(jsonData);
-  } else {
-    throw Exception(
-      'Erreur de chargement de la fusée : ${response.statusCode}',
-    );
+  Future<Rocket> fetchRocket(String id) async {
+    try {
+      final response = await http.get(Uri.parse('$baseUrl/$id'));
+
+      if (response.statusCode != 200) {
+        throw Exception('Erreur API Rocket : ${response.statusCode}');
+      }
+
+      final data = jsonDecode(response.body);
+      return Rocket.fromJson(data);
+    } catch (e) {
+      throw Exception('Erreur lors du chargement de la fusée : $e');
+    }
   }
 }

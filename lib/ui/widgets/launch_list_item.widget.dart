@@ -5,6 +5,8 @@ import 'package:intl/intl.dart';
 import 'package:spacexapp/ui/pages/launch_detail.page.dart';
 
 import '../../data/model/launch.model.dart';
+import '../../data/model/rocket/rocket.model.dart';
+import '../data/api/rocket.service.dart';
 
 class LaunchListItem extends StatelessWidget {
   final Launch launch;
@@ -49,25 +51,45 @@ class LaunchListItem extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          launch.name,
+                          launch.success
+                              ? "✅ ${launch.name}"
+                              : "❌ ${launch.name}",
                           style: Theme.of(context).textTheme.headlineSmall
                               ?.copyWith(color: Colors.white),
                         ),
                         const SizedBox(height: 4),
                         Text(
-                          'ID : ${launch.id}',
-                          style: style.copyWith(color: Colors.white),
+                          formattedDate,
+                          style: style.copyWith(color: Colors.grey),
                         ),
                         const SizedBox(height: 2),
-                        Text(
-                          'Fusée : ${launch.rocket}',
-                          style: style.copyWith(color: Colors.white),
-                        ),
-                        const SizedBox(height: 2),
-
-                        Text(
-                          'Date : $formattedDate',
-                          style: style.copyWith(color: Colors.white),
+                        FutureBuilder<Rocket>(
+                          future: RocketService().fetchRocket(launch.rocket),
+                          builder: (context, snapshot) {
+                            if (snapshot.connectionState ==
+                                ConnectionState.waiting) {
+                              return const Text(
+                                'Chargement...',
+                                style: TextStyle(color: Colors.grey),
+                              );
+                            } else if (snapshot.hasError) {
+                              return Text(
+                                'Erreur : ${snapshot.error}',
+                                style: const TextStyle(color: Colors.red),
+                              );
+                            } else if (!snapshot.hasData) {
+                              return const Text(
+                                'Fusée inconnue',
+                                style: TextStyle(color: Colors.white),
+                              );
+                            }
+                            // Fusée
+                            final rocket = snapshot.data!;
+                            return Text(
+                              'Fusée : ${rocket.name}',
+                              style: TextStyle(color: Colors.white),
+                            );
+                          },
                         ),
                       ],
                     ),

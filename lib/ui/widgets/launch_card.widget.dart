@@ -5,7 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:spacexapp/ui/pages/launch_detail.page.dart';
 
 import '../../data/model/launch.model.dart';
-import '../../data/model/rocket.model.dart';
+import '../../data/model/rocket/rocket.model.dart';
 import '../data/api/rocket.service.dart';
 
 class LaunchCard extends StatelessWidget {
@@ -64,7 +64,7 @@ class LaunchCard extends StatelessWidget {
                   ),
 
                   FutureBuilder<Rocket>(
-                    future: getRocketById(launch.rocket),
+                    future: RocketService().fetchRocket(launch.rocket),
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
                         return const Text(
@@ -93,6 +93,10 @@ class LaunchCard extends StatelessWidget {
 
                   Text(
                     formattedDate,
+                    style: style.copyWith(color: Colors.white),
+                  ),
+                  Text(
+                    "Lancement ${launch.success ? 'réussi ✅' : 'échoué ❌'}",
                     style: style.copyWith(color: Colors.white),
                   ),
                 ],
