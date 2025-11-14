@@ -3,6 +3,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spacexapp/ui/cubit/favorites/favorites.cubit.dart';
+import 'package:spacexapp/ui/cubit/launch/launch.cubit.dart';
+import 'package:spacexapp/ui/cubit/rocket/rocket.cubit.dart';
 import 'package:spacexapp/ui/pages/home.page.dart';
 
 void main() async {
@@ -16,7 +18,11 @@ void main() async {
 
   runApp(
     MultiBlocProvider(
-      providers: [BlocProvider(create: (_) => FavoritesCubit())],
+      providers: [
+        BlocProvider(create: (_) => FavoritesCubit()),
+        BlocProvider(create: (_) => LaunchCubit()),
+        BlocProvider(create: (_) => RocketCubit()),
+      ],
       child: MyApp(showOnboarding: !hasSeenOnboarding),
     ),
   );

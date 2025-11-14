@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:spacexapp/data/model/launch.model.dart';
 import 'package:spacexapp/ui/widgets/launch_card.widget.dart';
 import 'package:spacexapp/ui/widgets/launch_list_item.widget.dart';
 
-import '../../data/api/launch.service.dart';
+import '../cubit/launch/launch.cubit.dart';
 import '../onboarding/home.onboarding.dart';
 import '../onboarding/services/onboarding.service.dart';
 import 'favorites.page.dart';
@@ -17,19 +17,15 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late Future<List<Launch>> _launchFuture;
   var isListView = false;
 
   bool highlightFav = false;
   bool highlightSwitch = false;
-  int onboardingStep = -1; // -1 = pas d'onboarding, 0..n = step courant
+  int onboardingStep = -1;
 
   @override
   void initState() {
     super.initState();
-    _launchFuture = getAll().then((list) {
-      return list;
-    });
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!await OnboardingService.isDone()) {
@@ -111,60 +107,57 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ),
-            FutureBuilder(
-              future: _launchFuture,
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
+            BlocBuilder<LaunchCubit, LaunchState>(
+              builder: (context, state) {
+                if (state.loading) {
                   return const Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text('Erreur : ${snapshot.error}'));
-                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(child: Text('Aucun lancement trouvé'));
-                } else {
-                  final launches = snapshot.data!;
-                  final highlightCards = onboardingStep == 1;
-                  return Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Text(
-                          'Nombre de lancements : ${launches.length}.',
-                          style: style.copyWith(color: Colors.grey),
-                        ),
-                      ),
-                      Expanded(
-                        child: AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 300),
-                          switchInCurve: Curves.decelerate,
-                          switchOutCurve: Curves.decelerate,
-                          transitionBuilder: (child, animation) =>
-                              FadeTransition(opacity: animation, child: child),
-                          child: isListView
-                              ? ListView(
-                                  children: [
-                                    for (final launch in launches)
-                                      LaunchListItem(
-                                        launch: launch,
-                                        onboardingActive: highlightCards,
-                                      ),
-                                  ],
-                                )
-                              : GridView.count(
-                                  crossAxisCount: 2,
-                                  padding: const EdgeInsets.all(8),
-                                  children: [
-                                    for (final launch in launches)
-                                      LaunchCard(
-                                        launch: launch,
-                                        onboardingActive: highlightCards,
-                                      ),
-                                  ],
-                                ),
-                        ),
-                      ),
-                    ],
-                  );
                 }
+                if (state.error != null) {
+                  return Center(child: Text("Erreur : ${state.error}"));
+                }
+                if (state.launches.isEmpty) {
+                  return const Center(child: Text("Aucun lancement trouvé"));
+                }
+
+                final launches = state.launches;
+                final highlightCards = onboardingStep == 1;
+
+                return Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Text(
+                        'Nombre de lancements : ${launches.length}',
+                        style: style.copyWith(color: Colors.grey),
+                      ),
+                    ),
+                    Expanded(
+                      child: AnimatedSwitcher(
+                        duration: const Duration(milliseconds: 300),
+                        child: isListView
+                            ? ListView(
+                                children: [
+                                  for (final launch in launches)
+                                    LaunchListItem(
+                                      launch: launch,
+                                      onboardingActive: highlightCards,
+                                    ),
+                                ],
+                              )
+                            : GridView.count(
+                                crossAxisCount: 2,
+                                children: [
+                                  for (final launch in launches)
+                                    LaunchCard(
+                                      launch: launch,
+                                      onboardingActive: highlightCards,
+                                    ),
+                                ],
+                              ),
+                      ),
+                    ),
+                  ],
+                );
               },
             ),
           ],

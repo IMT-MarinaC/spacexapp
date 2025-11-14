@@ -1,14 +1,14 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:spacexapp/ui/pages/launch_detail.page.dart';
 
-import '../../data/api/rocket.service.dart';
 import '../../data/model/launch.model.dart';
-import '../../data/model/rocket/rocket.model.dart';
+import '../cubit/rocket/rocket.cubit.dart';
 
-class LaunchListItem extends StatelessWidget {
+class LaunchListItem extends StatefulWidget {
   final Launch launch;
   final bool onboardingActive;
 
@@ -19,12 +19,27 @@ class LaunchListItem extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    final TextStyle style = Theme.of(context).textTheme.bodyMedium!;
-    final date = launch.dateUtc;
-    final formattedDate = date != null
+  State<LaunchListItem> createState() => _LaunchListItemState();
+}
+
+class _LaunchListItemState extends State<LaunchListItem> {
+  late final String formattedDate;
+
+  @override
+  void initState() {
+    super.initState();
+
+    final date = widget.launch.dateUtc;
+    formattedDate = date != null
         ? DateFormat('d MMMM yyyy à HH:mm', 'fr_FR').format(date.toLocal())
         : 'Date inconnue';
+
+    context.read<RocketCubit>().fetchRocket(widget.launch.rocket);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final TextStyle style = Theme.of(context).textTheme.bodyMedium!;
 
     return Container(
       margin: const EdgeInsets.all(8),
@@ -37,14 +52,14 @@ class LaunchListItem extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => LaunchDetailPage(launch: launch),
+                  builder: (context) => LaunchDetailPage(launch: widget.launch),
                 ),
               );
             },
             child: Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: onboardingActive
+                color: widget.onboardingActive
                     ? Colors.amber
                     : Colors.black.withValues(alpha: 0.7),
                 borderRadius: BorderRadius.circular(12),
@@ -52,59 +67,63 @@ class LaunchListItem extends StatelessWidget {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  // Infos sur le lancement
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          launch.success
-                              ? "✅ ${launch.name}"
-                              : "❌ ${launch.name}",
+                          widget.launch.success
+                              ? "✅ ${widget.launch.name}"
+                              : "❌ ${widget.launch.name}",
                           style: Theme.of(context).textTheme.headlineSmall
                               ?.copyWith(
-                                color: onboardingActive
+                                color: widget.onboardingActive
                                     ? Colors.black
                                     : Colors.white,
                               ),
                           overflow: TextOverflow.ellipsis,
                         ),
+
                         const SizedBox(height: 4),
+
                         Text(
                           formattedDate,
                           style: style.copyWith(
-                            color: onboardingActive
+                            color: widget.onboardingActive
                                 ? Colors.black
                                 : Colors.grey,
                           ),
                         ),
+
                         const SizedBox(height: 2),
-                        FutureBuilder<Rocket>(
-                          future: RocketService().fetchRocket(launch.rocket),
-                          builder: (context, snapshot) {
-                            if (snapshot.connectionState ==
-                                ConnectionState.waiting) {
+
+                        BlocBuilder<RocketCubit, RocketState>(
+                          builder: (context, rocketState) {
+                            if (rocketState.loading) {
                               return const Text(
-                                'Chargement...',
+                                "Chargement...",
                                 style: TextStyle(color: Colors.grey),
                               );
-                            } else if (snapshot.hasError) {
+                            }
+
+                            if (rocketState.error != null) {
                               return Text(
-                                'Erreur : ${snapshot.error}',
+                                "Erreur : ${rocketState.error}",
                                 style: const TextStyle(color: Colors.red),
                               );
-                            } else if (!snapshot.hasData) {
+                            }
+
+                            if (rocketState.rocket == null) {
                               return const Text(
-                                'Fusée inconnue',
+                                "Fusée inconnue",
                                 style: TextStyle(color: Colors.white),
                               );
                             }
-                            // Fusée
-                            final rocket = snapshot.data!;
+
                             return Text(
-                              'Fusée : ${rocket.name}',
+                              "Fusée : ${rocketState.rocket!.name}",
                               style: TextStyle(
-                                color: onboardingActive
+                                color: widget.onboardingActive
                                     ? Colors.black
                                     : Colors.white,
                               ),
@@ -114,19 +133,22 @@ class LaunchListItem extends StatelessWidget {
                       ],
                     ),
                   ),
+
                   Text(
-                    '#${launch.flightNumber.toString()}',
-                    style: TextStyle(fontSize: 32, color: Colors.white),
+                    '#${widget.launch.flightNumber}',
+                    style: const TextStyle(fontSize: 32, color: Colors.white),
                   ),
+
                   const SizedBox(width: 8),
+
                   ClipRRect(
                     borderRadius: BorderRadius.circular(8),
                     child: Image.network(
-                      launch.links.patch?.large ?? '',
+                      widget.launch.links.patch?.large ?? '',
                       height: 60,
                       width: 60,
                       fit: BoxFit.cover,
-                      errorBuilder: (context, error, stackTrace) => Icon(
+                      errorBuilder: (context, error, stackTrace) => const Icon(
                         Icons.rocket_launch,
                         color: Colors.white24,
                         size: 40,

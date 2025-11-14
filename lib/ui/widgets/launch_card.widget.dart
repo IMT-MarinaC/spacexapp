@@ -1,14 +1,14 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:spacexapp/ui/pages/launch_detail.page.dart';
 
-import '../../data/api/rocket.service.dart';
 import '../../data/model/launch.model.dart';
-import '../../data/model/rocket/rocket.model.dart';
+import '../cubit/rocket/rocket.cubit.dart';
 
-class LaunchCard extends StatelessWidget {
+class LaunchCard extends StatefulWidget {
   final Launch launch;
   final bool onboardingActive;
 
@@ -19,12 +19,27 @@ class LaunchCard extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    final TextStyle style = Theme.of(context).textTheme.bodySmall!;
-    final date = launch.dateUtc;
-    final formattedDate = date != null
+  State<LaunchCard> createState() => _LaunchCardState();
+}
+
+class _LaunchCardState extends State<LaunchCard> {
+  late final String formattedDate;
+
+  @override
+  void initState() {
+    super.initState();
+
+    final date = widget.launch.dateUtc;
+    formattedDate = date != null
         ? DateFormat('d MMMM yyyy à HH:mm', 'fr_FR').format(date.toLocal())
         : 'Date inconnue';
+
+    context.read<RocketCubit>().fetchRocket(widget.launch.rocket);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final TextStyle style = Theme.of(context).textTheme.bodySmall!;
 
     return Container(
       margin: const EdgeInsets.all(8),
@@ -37,31 +52,33 @@ class LaunchCard extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => LaunchDetailPage(launch: launch),
+                  builder: (context) => LaunchDetailPage(launch: widget.launch),
                 ),
               );
             },
             child: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: onboardingActive
+                color: widget.onboardingActive
                     ? Colors.amber
                     : Colors.black.withValues(alpha: 0.7),
                 borderRadius: BorderRadius.circular(12),
               ),
-              // Data
+
+              // 🧩 Données du launch
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  // Nom + Patch
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
                       Flexible(
                         child: Text(
-                          launch.name,
+                          widget.launch.name,
                           style: Theme.of(context).textTheme.headlineSmall
                               ?.copyWith(
-                                color: onboardingActive
+                                color: widget.onboardingActive
                                     ? Colors.black
                                     : Colors.white,
                               ),
@@ -69,8 +86,15 @@ class LaunchCard extends StatelessWidget {
                         ),
                       ),
                       Image(
-                        image: NetworkImage(launch.links.patch?.small ?? ''),
+                        image: NetworkImage(
+                          widget.launch.links.patch?.small ?? '',
+                        ),
                         height: 40,
+                        errorBuilder: (_, _, _) => const Icon(
+                          Icons.rocket_launch,
+                          color: Colors.white24,
+                          size: 32,
+                        ),
                       ),
                     ],
                   ),
@@ -80,41 +104,50 @@ class LaunchCard extends StatelessWidget {
                   Text(
                     formattedDate,
                     style: style.copyWith(
-                      color: onboardingActive ? Colors.black : Colors.grey,
+                      color: widget.onboardingActive
+                          ? Colors.black
+                          : Colors.grey,
                     ),
                   ),
 
                   const SizedBox(height: 12),
 
-                  FutureBuilder<Rocket>(
-                    future: RocketService().fetchRocket(launch.rocket),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
+                  BlocBuilder<RocketCubit, RocketState>(
+                    builder: (context, rocketState) {
+                      if (rocketState.loading) {
                         return const Text(
-                          'Chargement...',
+                          "Chargement de la fusée...",
                           style: TextStyle(color: Colors.grey),
                         );
-                      } else if (snapshot.hasError) {
+                      }
+
+                      if (rocketState.error != null) {
                         return Text(
-                          'Erreur : ${snapshot.error}',
+                          "Erreur : ${rocketState.error}",
                           style: const TextStyle(color: Colors.red),
                         );
-                      } else if (!snapshot.hasData) {
+                      }
+
+                      if (rocketState.rocket == null) {
                         return const Text(
-                          'Fusée inconnue',
+                          "Fusée inconnue",
                           style: TextStyle(color: Colors.white),
                         );
                       }
-                      // Fusée
-                      final rocket = snapshot.data!;
+
+                      final rocket = rocketState.rocket!;
+
                       return Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('Fusée', style: TextStyle(color: Colors.grey)),
+                          const Text(
+                            "Fusée",
+                            style: TextStyle(color: Colors.grey),
+                          ),
                           Text(
                             rocket.name,
                             style: TextStyle(
-                              color: onboardingActive
+                              color: widget.onboardingActive
                                   ? Colors.black
                                   : Colors.white,
                             ),
@@ -124,31 +157,42 @@ class LaunchCard extends StatelessWidget {
                     },
                   ),
 
+                  const SizedBox(height: 8),
+
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text('Statut', style: TextStyle(color: Colors.grey)),
+                      const Text(
+                        "Statut",
+                        style: TextStyle(color: Colors.grey),
+                      ),
                       Text(
-                        launch.success ? '✅' : '❌',
+                        widget.launch.success ? "✅" : "❌",
                         style: style.copyWith(
-                          color: onboardingActive ? Colors.black : Colors.white,
+                          color: widget.onboardingActive
+                              ? Colors.black
+                              : Colors.white,
                           fontSize: 14,
                         ),
                       ),
                     ],
                   ),
 
+                  const SizedBox(height: 8),
+
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        'Numéro de vol',
+                      const Text(
+                        "Numéro de vol",
                         style: TextStyle(color: Colors.grey),
                       ),
                       Text(
-                        '#${launch.flightNumber}',
+                        "#${widget.launch.flightNumber}",
                         style: style.copyWith(
-                          color: onboardingActive ? Colors.black : Colors.white,
+                          color: widget.onboardingActive
+                              ? Colors.black
+                              : Colors.white,
                           fontSize: 24,
                         ),
                       ),
