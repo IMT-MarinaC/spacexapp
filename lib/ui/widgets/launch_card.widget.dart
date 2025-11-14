@@ -46,11 +46,12 @@ class LaunchCard extends StatelessWidget {
               decoration: BoxDecoration(
                 color: onboardingActive
                     ? Colors.amber
-                    : Colors.black.withOpacity(0.8),
+                    : Colors.black.withValues(alpha: 0.7),
                 borderRadius: BorderRadius.circular(12),
               ),
               // Data
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -74,6 +75,17 @@ class LaunchCard extends StatelessWidget {
                     ],
                   ),
 
+                  const SizedBox(height: 4),
+
+                  Text(
+                    formattedDate,
+                    style: style.copyWith(
+                      color: onboardingActive ? Colors.black : Colors.grey,
+                    ),
+                  ),
+
+                  const SizedBox(height: 12),
+
                   FutureBuilder<Rocket>(
                     future: RocketService().fetchRocket(launch.rocket),
                     builder: (context, snapshot) {
@@ -95,26 +107,52 @@ class LaunchCard extends StatelessWidget {
                       }
                       // Fusée
                       final rocket = snapshot.data!;
-                      return Text(
-                        rocket.name,
-                        style: TextStyle(
-                          color: onboardingActive ? Colors.black : Colors.white,
-                        ),
+                      return Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('Fusée', style: TextStyle(color: Colors.grey)),
+                          Text(
+                            rocket.name,
+                            style: TextStyle(
+                              color: onboardingActive
+                                  ? Colors.black
+                                  : Colors.white,
+                            ),
+                          ),
+                        ],
                       );
                     },
                   ),
 
-                  Text(
-                    formattedDate,
-                    style: style.copyWith(
-                      color: onboardingActive ? Colors.black : Colors.white,
-                    ),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text('Statut', style: TextStyle(color: Colors.grey)),
+                      Text(
+                        launch.success ? '✅' : '❌',
+                        style: style.copyWith(
+                          color: onboardingActive ? Colors.black : Colors.white,
+                          fontSize: 14,
+                        ),
+                      ),
+                    ],
                   ),
-                  Text(
-                    "Lancement ${launch.success ? 'réussi ✅' : 'échoué ❌'}",
-                    style: style.copyWith(
-                      color: onboardingActive ? Colors.black : Colors.white,
-                    ),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(
+                        'Numéro de vol',
+                        style: TextStyle(color: Colors.grey),
+                      ),
+                      Text(
+                        '#${launch.flightNumber}',
+                        style: style.copyWith(
+                          color: onboardingActive ? Colors.black : Colors.white,
+                          fontSize: 24,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),

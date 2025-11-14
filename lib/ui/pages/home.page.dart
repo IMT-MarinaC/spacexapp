@@ -151,8 +151,6 @@ class _HomePageState extends State<HomePage> {
                                 )
                               : GridView.count(
                                   crossAxisCount: 2,
-                                  crossAxisSpacing: 8,
-                                  mainAxisSpacing: 8,
                                   padding: const EdgeInsets.all(8),
                                   children: [
                                     for (final launch in launches)

@@ -49,67 +49,6 @@ class _LaunchDetailPageState extends State<LaunchDetailPage> {
         backgroundColor: Colors.transparent,
         elevation: 0,
 
-        /*actions: [
-          IconButton(
-            icon: Icon(
-              isFavorite ? Icons.favorite : Icons.favorite_border,
-              color: isFavorite ? Colors.red : Colors.white,
-            ),
-            onPressed: () {
-              //setState(() {
-              isFavorite = !isFavorite;
-              //});
-
-              // Messages pour les favoris
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Center(
-                    child: RichText(
-                      text: isFavorite
-                          ? TextSpan(
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                              ),
-                              children: [
-                                TextSpan(
-                                  text: launch.name,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const TextSpan(
-                                  text: ' a été ajouté aux favoris ❤️',
-                                ),
-                              ],
-                            )
-                          : TextSpan(
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 12,
-                              ),
-                              children: [
-                                TextSpan(
-                                  text: launch.name,
-                                  style: const TextStyle(
-                                    fontWeight: FontWeight.bold,
-                                  ),
-                                ),
-                                const TextSpan(
-                                  text: ' a été retiré des favoris 💔️',
-                                ),
-                              ],
-                            ),
-                    ),
-                  ),
-                  duration: const Duration(seconds: 1),
-                  behavior: SnackBarBehavior.floating,
-                  backgroundColor: Colors.black.withValues(alpha: 0.7),
-                ),
-              );
-            },
-          ),
-        ],*/
         actions: [
           IconButton(
             icon: const Icon(Icons.info_outline),
@@ -140,12 +79,54 @@ class _LaunchDetailPageState extends State<LaunchDetailPage> {
 
                   ScaffoldMessenger.of(context).showSnackBar(
                     SnackBar(
-                      content: Text(
-                        isFav
-                            ? "${launch.name} retiré des favoris 💔"
-                            : "${launch.name} ajouté aux favoris ❤️",
+                      content: RichText(
+                        text: isFav
+                            ? TextSpan(
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                ),
+                                children: [
+                                  TextSpan(
+                                    text: launch.name,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const TextSpan(
+                                    text: ' a été retiré des favoris 💔️',
+                                  ),
+                                ],
+                              )
+                            : TextSpan(
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                ),
+                                children: [
+                                  TextSpan(
+                                    text: launch.name,
+                                    style: const TextStyle(
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const TextSpan(
+                                    text: ' a été ajouté aux favoris ❤️',
+                                  ),
+                                ],
+                              ),
                       ),
                       duration: const Duration(seconds: 1),
+                      behavior: SnackBarBehavior.floating,
+                      backgroundColor: Colors.black.withValues(alpha: 0.1),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(16),
+                        side: BorderSide(color: Colors.grey),
+                      ),
+                      margin: const EdgeInsets.symmetric(
+                        horizontal: 16,
+                        vertical: 12,
+                      ),
                     ),
                   );
                 },
@@ -278,6 +259,7 @@ class _LaunchDetailPageState extends State<LaunchDetailPage> {
                       ),
                     if (core.landingType != null)
                       Text('Type : ${core.landingType}'),
+
                     const SizedBox(height: 10),
                   ],
                 ),

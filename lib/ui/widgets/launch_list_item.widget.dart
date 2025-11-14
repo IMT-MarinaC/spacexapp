@@ -46,7 +46,7 @@ class LaunchListItem extends StatelessWidget {
               decoration: BoxDecoration(
                 color: onboardingActive
                     ? Colors.amber
-                    : Colors.black.withOpacity(0.8),
+                    : Colors.black.withValues(alpha: 0.7),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
@@ -67,6 +67,7 @@ class LaunchListItem extends StatelessWidget {
                                     ? Colors.black
                                     : Colors.white,
                               ),
+                          overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(height: 4),
                         Text(
@@ -112,6 +113,10 @@ class LaunchListItem extends StatelessWidget {
                         ),
                       ],
                     ),
+                  ),
+                  Text(
+                    '#${launch.flightNumber.toString()}',
+                    style: TextStyle(fontSize: 32, color: Colors.white),
                   ),
                   const SizedBox(width: 8),
                   ClipRRect(
