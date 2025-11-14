@@ -4,6 +4,7 @@ import 'package:spacexapp/ui/widgets/launch_card.widget.dart';
 import 'package:spacexapp/ui/widgets/launch_list_item.widget.dart';
 
 import '../../data/api/launch.service.dart';
+import 'favorites.page.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -32,6 +33,18 @@ class _HomePageState extends State<HomePage> {
         title: Image.asset('assets/images/spacex_logo_white.png', width: 200),
 
         actions: [
+          IconButton(
+            icon: const Icon(Icons.favorite, color: Colors.white),
+            tooltip: "Mes favoris",
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => FavoritesPage(isListView: isListView),
+                ),
+              );
+            },
+          ),
           IconButton(
             icon: Icon(isListView ? Icons.grid_view : Icons.list),
             tooltip: isListView ? "Afficher en grille" : "Afficher en liste",

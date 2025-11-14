@@ -6,4 +6,6 @@ class FavoritesState {
   FavoritesState copyWith({Set<String>? favoritesIds}) {
     return FavoritesState(favoritesIds: favoritesIds ?? this.favoritesIds);
   }
+
+  bool isFavorite(String launchId) => favoritesIds.contains(launchId);
 }
