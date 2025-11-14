@@ -10,8 +10,13 @@ import '../../data/model/rocket/rocket.model.dart';
 
 class LaunchListItem extends StatelessWidget {
   final Launch launch;
+  final bool onboardingActive;
 
-  const LaunchListItem({super.key, required this.launch});
+  const LaunchListItem({
+    super.key,
+    required this.launch,
+    this.onboardingActive = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +44,9 @@ class LaunchListItem extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: Colors.black.withValues(alpha: 0.8),
+                color: onboardingActive
+                    ? Colors.amber
+                    : Colors.black.withOpacity(0.8),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: Row(
@@ -55,12 +62,20 @@ class LaunchListItem extends StatelessWidget {
                               ? "✅ ${launch.name}"
                               : "❌ ${launch.name}",
                           style: Theme.of(context).textTheme.headlineSmall
-                              ?.copyWith(color: Colors.white),
+                              ?.copyWith(
+                                color: onboardingActive
+                                    ? Colors.black
+                                    : Colors.white,
+                              ),
                         ),
                         const SizedBox(height: 4),
                         Text(
                           formattedDate,
-                          style: style.copyWith(color: Colors.grey),
+                          style: style.copyWith(
+                            color: onboardingActive
+                                ? Colors.black
+                                : Colors.grey,
+                          ),
                         ),
                         const SizedBox(height: 2),
                         FutureBuilder<Rocket>(
@@ -87,7 +102,11 @@ class LaunchListItem extends StatelessWidget {
                             final rocket = snapshot.data!;
                             return Text(
                               'Fusée : ${rocket.name}',
-                              style: TextStyle(color: Colors.white),
+                              style: TextStyle(
+                                color: onboardingActive
+                                    ? Colors.black
+                                    : Colors.white,
+                              ),
                             );
                           },
                         ),

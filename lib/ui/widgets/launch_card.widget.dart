@@ -10,8 +10,13 @@ import '../../data/model/rocket/rocket.model.dart';
 
 class LaunchCard extends StatelessWidget {
   final Launch launch;
+  final bool onboardingActive;
 
-  const LaunchCard({super.key, required this.launch});
+  const LaunchCard({
+    super.key,
+    required this.launch,
+    this.onboardingActive = false,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +44,9 @@ class LaunchCard extends StatelessWidget {
             child: Container(
               padding: const EdgeInsets.all(8),
               decoration: BoxDecoration(
-                color: Colors.black.withValues(alpha: 0.8),
+                color: onboardingActive
+                    ? Colors.amber
+                    : Colors.black.withOpacity(0.8),
                 borderRadius: BorderRadius.circular(12),
               ),
               // Data
@@ -52,7 +59,11 @@ class LaunchCard extends StatelessWidget {
                         child: Text(
                           launch.name,
                           style: Theme.of(context).textTheme.headlineSmall
-                              ?.copyWith(color: Colors.white),
+                              ?.copyWith(
+                                color: onboardingActive
+                                    ? Colors.black
+                                    : Colors.white,
+                              ),
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
@@ -86,18 +97,24 @@ class LaunchCard extends StatelessWidget {
                       final rocket = snapshot.data!;
                       return Text(
                         rocket.name,
-                        style: TextStyle(color: Colors.white),
+                        style: TextStyle(
+                          color: onboardingActive ? Colors.black : Colors.white,
+                        ),
                       );
                     },
                   ),
 
                   Text(
                     formattedDate,
-                    style: style.copyWith(color: Colors.white),
+                    style: style.copyWith(
+                      color: onboardingActive ? Colors.black : Colors.white,
+                    ),
                   ),
                   Text(
                     "Lancement ${launch.success ? 'réussi ✅' : 'échoué ❌'}",
-                    style: style.copyWith(color: Colors.white),
+                    style: style.copyWith(
+                      color: onboardingActive ? Colors.black : Colors.white,
+                    ),
                   ),
                 ],
               ),

@@ -22,6 +22,7 @@ class _HomePageState extends State<HomePage> {
 
   bool highlightFav = false;
   bool highlightSwitch = false;
+  int onboardingStep = -1; // -1 = pas d'onboarding, 0..n = step courant
 
   @override
   void initState() {
@@ -32,11 +33,14 @@ class _HomePageState extends State<HomePage> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!await OnboardingService.isDone()) {
-        showHomeOnboarding(
+        setState(() => onboardingStep = 0);
+        await showHomeOnboarding(
           context,
           onHighlightFav: (value) => setState(() => highlightFav = value),
           onHighlightSwitch: (value) => setState(() => highlightSwitch = value),
+          onStepChanged: (step) => setState(() => onboardingStep = step),
         );
+        setState(() => onboardingStep = -1);
       }
     });
   }
@@ -47,22 +51,23 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Image.asset('assets/images/spacex_logo_white.png', width: 200),
-
         actions: [
           IconButton(
             icon: const Icon(Icons.info_outline),
             tooltip: 'Revoir l’onboarding',
             onPressed: () async {
-              // Reset du flag pour tests
               final prefs = await SharedPreferences.getInstance();
               await prefs.setBool('onboarding_done', false);
 
-              showHomeOnboarding(
+              setState(() => onboardingStep = 0);
+              await showHomeOnboarding(
                 context,
                 onHighlightFav: (value) => setState(() => highlightFav = value),
                 onHighlightSwitch: (value) =>
                     setState(() => highlightSwitch = value),
+                onStepChanged: (step) => setState(() => onboardingStep = step),
               );
+              setState(() => onboardingStep = -1);
             },
           ),
           IconButton(
@@ -117,6 +122,7 @@ class _HomePageState extends State<HomePage> {
                   return const Center(child: Text('Aucun lancement trouvé'));
                 } else {
                   final launches = snapshot.data!;
+                  final highlightCards = onboardingStep == 1;
                   return Column(
                     children: [
                       Padding(
@@ -137,7 +143,10 @@ class _HomePageState extends State<HomePage> {
                               ? ListView(
                                   children: [
                                     for (final launch in launches)
-                                      LaunchListItem(launch: launch),
+                                      LaunchListItem(
+                                        launch: launch,
+                                        onboardingActive: highlightCards,
+                                      ),
                                   ],
                                 )
                               : GridView.count(
@@ -147,7 +156,10 @@ class _HomePageState extends State<HomePage> {
                                   padding: const EdgeInsets.all(8),
                                   children: [
                                     for (final launch in launches)
-                                      LaunchCard(launch: launch),
+                                      LaunchCard(
+                                        launch: launch,
+                                        onboardingActive: highlightCards,
+                                      ),
                                   ],
                                 ),
                         ),

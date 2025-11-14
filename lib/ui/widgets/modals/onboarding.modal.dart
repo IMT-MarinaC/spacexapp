@@ -7,6 +7,7 @@ class OnboardingModal extends StatelessWidget {
   final String message;
   final Icon icon;
   final VoidCallback onNext;
+  final String nextLabel;
 
   const OnboardingModal({
     super.key,
@@ -14,6 +15,7 @@ class OnboardingModal extends StatelessWidget {
     required this.message,
     required this.icon,
     required this.onNext,
+    this.nextLabel = 'Suivant',
   });
 
   @override
@@ -64,7 +66,7 @@ class OnboardingModal extends StatelessWidget {
                     ),
                     elevation: 6,
                   ),
-                  child: const Text('Suivant'),
+                  child: Text(nextLabel), // utilise le label fourni
                 ),
               ],
             ),
