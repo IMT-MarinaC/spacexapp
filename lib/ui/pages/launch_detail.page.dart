@@ -242,7 +242,8 @@ class _LaunchDetailPageState extends State<LaunchDetailPage> {
 
             // infos des étages
             if (launch.cores.isNotEmpty) ...[
-              Text('Détails du premier étage :', style: theme.titleMedium),
+              Text('Détails des coeurs :', style: theme.titleMedium),
+              Text('Nombre de coeurs : ${launch.cores.length}'),
               const SizedBox(height: 8),
               for (final core in launch.cores)
                 Column(
