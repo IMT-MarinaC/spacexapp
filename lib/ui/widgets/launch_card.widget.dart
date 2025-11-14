@@ -4,9 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:spacexapp/ui/pages/launch_detail.page.dart';
 
+import '../../data/api/rocket.service.dart';
 import '../../data/model/launch.model.dart';
 import '../../data/model/rocket/rocket.model.dart';
-import '../data/api/rocket.service.dart';
 
 class LaunchCard extends StatelessWidget {
   final Launch launch;

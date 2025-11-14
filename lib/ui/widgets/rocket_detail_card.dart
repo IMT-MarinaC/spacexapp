@@ -22,8 +22,8 @@ class RocketDetailCard extends StatelessWidget {
         bottom: 8,
         start: 12,
       ),
-      decoration: new BoxDecoration(
-        borderRadius: new BorderRadius.circular(16.0),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16.0),
         color: const Color(0xb3303030),
       ),
       child: Column(

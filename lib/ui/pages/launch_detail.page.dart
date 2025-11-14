@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spacexapp/data/model/launch.model.dart';
-import 'package:spacexapp/ui/data/api/rocket.service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
+import '../../data/api/rocket.service.dart';
 import '../../data/model/rocket/rocket.model.dart';
+import '../cubit/cubit.state.dart';
+import '../cubit/launch.cubit.dart';
+import '../cubit/launch.state.dart';
 import '../widgets/rocket_modal.widget.dart';
 
 class LaunchDetailPage extends StatelessWidget {
@@ -23,7 +27,7 @@ class LaunchDetailPage extends StatelessWidget {
         elevation: 0,
 
         // ⭐ FAVORIS — inchangé
-        actions: [
+        /*actions: [
           IconButton(
             icon: Icon(
               isFavorite ? Icons.favorite : Icons.favorite_border,
@@ -80,6 +84,81 @@ class LaunchDetailPage extends StatelessWidget {
                   behavior: SnackBarBehavior.floating,
                   backgroundColor: Colors.black.withValues(alpha: 0.7),
                 ),
+              );
+            },
+          ),
+        ],*/
+        actions: [
+          BlocBuilder<LaunchCubit, LaunchState>(
+            builder: (context, state) {
+              // défaut = pas favori
+              bool isFavorite = false;
+
+              if (state is SuccessState<LaunchStateData>) {
+                isFavorite = state.data.likedLaunches.any(
+                  (l) => l.id == launch.id,
+                );
+              }
+
+              return IconButton(
+                icon: Icon(
+                  isFavorite ? Icons.favorite : Icons.favorite_border,
+                  color: isFavorite ? Colors.red : Colors.white,
+                ),
+                onPressed: () {
+                  final added = !isFavorite; // avant modification
+
+                  // toggle
+                  context.read<LaunchCubit>().like(launch);
+
+                  // message
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Center(
+                        child: RichText(
+                          text: added
+                              ? TextSpan(
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                  ),
+                                  children: [
+                                    TextSpan(
+                                      text: launch.name,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const TextSpan(
+                                      text: ' a été ajouté aux favoris ❤️',
+                                    ),
+                                  ],
+                                )
+                              : TextSpan(
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                  ),
+                                  children: [
+                                    TextSpan(
+                                      text: launch.name,
+                                      style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                    const TextSpan(
+                                      text: ' a été retiré des favoris 💔️',
+                                    ),
+                                  ],
+                                ),
+                        ),
+                      ),
+                      duration: const Duration(seconds: 1),
+                      behavior: SnackBarBehavior.floating,
+                      backgroundColor: Colors.black.withOpacity(0.7),
+                    ),
+                  );
+                },
               );
             },
           ),
@@ -290,29 +369,6 @@ class LaunchDetailPage extends StatelessWidget {
 
             const SizedBox(height: 50),
           ],
-        ),
-      ),
-    );
-  }
-
-  // utils
-  Widget _buildLink(BuildContext context, String label, String? url) {
-    if (url == null) return const SizedBox.shrink();
-    return InkWell(
-      onTap: () async {
-        final uri = Uri.parse(url);
-        if (await canLaunchUrl(uri)) {
-          await launchUrl(uri, mode: LaunchMode.externalApplication);
-        }
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4),
-        child: Text(
-          label,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: Colors.blueAccent,
-            decoration: TextDecoration.underline,
-          ),
         ),
       ),
     );
