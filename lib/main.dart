@@ -4,7 +4,7 @@ import 'package:intl/date_symbol_data_local.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spacexapp/ui/cubit/favorites/favorites.cubit.dart';
 import 'package:spacexapp/ui/cubit/launch/launch.cubit.dart';
-import 'package:spacexapp/ui/cubit/rocket/rocket.cubit.dart';
+import 'package:spacexapp/ui/cubit/rocket/rocket_list.cubit.dart';
 import 'package:spacexapp/ui/pages/home.page.dart';
 
 void main() async {
@@ -21,7 +21,7 @@ void main() async {
       providers: [
         BlocProvider(create: (_) => FavoritesCubit()),
         BlocProvider(create: (_) => LaunchCubit()),
-        BlocProvider(create: (_) => RocketCubit()),
+        BlocProvider(create: (_) => RocketListCubit()..fetchRockets()),
       ],
       child: MyApp(showOnboarding: !hasSeenOnboarding),
     ),

@@ -2,23 +2,29 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
-import '../../../data/model/rocket/rocket.model.dart';
+import '../model/rocket/rocket.model.dart';
 
 class RocketService {
-  final String baseUrl = 'https://api.spacexdata.com/v4/rockets';
+  static const String _baseUrl = 'https://api.spacexdata.com/v4/rockets';
 
   Future<Rocket> fetchRocket(String id) async {
-    try {
-      final response = await http.get(Uri.parse('$baseUrl/$id'));
+    final response = await http.get(Uri.parse("$_baseUrl/$id"));
 
-      if (response.statusCode != 200) {
-        throw Exception('Erreur API Rocket : ${response.statusCode}');
-      }
-
-      final data = jsonDecode(response.body);
-      return Rocket.fromJson(data);
-    } catch (e) {
-      throw Exception('Erreur lors du chargement de la fusée : $e');
+    if (response.statusCode != 200) {
+      throw Exception("Erreur serveur : ${response.statusCode}");
     }
+
+    return Rocket.fromJson(jsonDecode(response.body));
+  }
+
+  Future<List<Rocket>> fetchAllRockets() async {
+    final response = await http.get(Uri.parse(_baseUrl));
+
+    if (response.statusCode != 200) {
+      throw Exception("Erreur serveur : ${response.statusCode}");
+    }
+
+    final list = jsonDecode(response.body) as List;
+    return list.map((e) => Rocket.fromJson(e)).toList();
   }
 }

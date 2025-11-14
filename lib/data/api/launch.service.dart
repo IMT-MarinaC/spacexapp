@@ -1,52 +1,52 @@
 import 'dart:convert';
 
 import 'package:http/http.dart' as http;
-import 'package:spacexapp/data/model/launch.model.dart';
+
+import '../model/launch.model.dart';
 
 const String _baseUrl = 'https://api.spacexdata.com/v4/launches';
 
 Future<List<Launch>> getAll() async {
   try {
-    final httpResponse = await http.get(Uri.parse(_baseUrl));
+    final response = await http.get(Uri.parse(_baseUrl));
 
-    if (httpResponse.statusCode != 200) {
-      throw Exception('Erreur serveur : ${httpResponse.statusCode}');
+    if (response.statusCode != 200) {
+      throw Exception('Erreur serveur : ${response.statusCode}');
     }
 
-    final List<dynamic> jsonList = jsonDecode(httpResponse.body);
-    final List<Launch> launches = [];
+    final List<dynamic> jsonList = jsonDecode(response.body);
 
-    for (var jsonItem in jsonList) {
-      if (jsonItem is Map<String, dynamic>) {
-        try {
-          final launch = Launch.fromJson(jsonItem);
-          launches.add(launch);
-        } catch (e) {
-          print("❌ Erreur lors du parsing d’un lancement : $e");
-        }
-      }
-    }
-
-    return launches;
+    return jsonList
+        .whereType<Map<String, dynamic>>()
+        .map((json) {
+          try {
+            return Launch.fromJson(json);
+          } catch (e) {
+            print("❌ Erreur parsing d’un lancement : $e");
+            return null;
+          }
+        })
+        .where((launch) => launch != null)
+        .cast<Launch>()
+        .toList();
   } catch (e) {
-    print('❌ Erreur lors de la récupération des lancements : $e');
-    return [];
+    print('❌ Erreur récupération lancements : $e');
+    throw Exception("Impossible de récupérer les lancements");
   }
 }
 
-// Récupère un seul lancement via son ID
 Future<Launch?> getById(String id) async {
   try {
-    final httpResponse = await http.get(Uri.parse('$_baseUrl/$id'));
+    final response = await http.get(Uri.parse('$_baseUrl/$id'));
 
-    if (httpResponse.statusCode != 200) {
-      throw Exception('Erreur serveur : ${httpResponse.statusCode}');
+    if (response.statusCode != 200) {
+      throw Exception('Erreur serveur : ${response.statusCode}');
     }
 
-    final Map<String, dynamic> jsonItem = jsonDecode(httpResponse.body);
-    return Launch.fromJson(jsonItem);
+    final Map<String, dynamic> json = jsonDecode(response.body);
+    return Launch.fromJson(json);
   } catch (e) {
-    print('❌ Erreur lors de la récupération du lancement $id : $e');
+    print('❌ Erreur récupération du lancement $id : $e');
     return null;
   }
 }

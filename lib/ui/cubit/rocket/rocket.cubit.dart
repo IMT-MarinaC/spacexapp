@@ -8,13 +8,24 @@ class RocketState {
   final Rocket? rocket;
   final String? error;
 
-  RocketState({this.loading = false, this.rocket, this.error});
+  const RocketState({this.loading = false, this.rocket, this.error});
+
+  RocketState copyWith({bool? loading, Rocket? rocket, String? error}) {
+    return RocketState(
+      loading: loading ?? this.loading,
+      rocket: rocket ?? this.rocket,
+      error: error,
+    );
+  }
 }
 
 class RocketCubit extends Cubit<RocketState> {
+  final RocketService _service;
   final Map<String, Rocket> _cache = {};
 
-  RocketCubit() : super(RocketState(loading: true));
+  RocketCubit({RocketService? service})
+    : _service = service ?? RocketService(),
+      super(const RocketState(loading: true));
 
   Future<void> fetchRocket(String rocketId) async {
     if (_cache.containsKey(rocketId)) {
@@ -23,8 +34,8 @@ class RocketCubit extends Cubit<RocketState> {
     }
 
     try {
-      emit(RocketState(loading: true));
-      final rocket = await RocketService().fetchRocket(rocketId);
+      emit(const RocketState(loading: true));
+      final rocket = await _service.fetchRocket(rocketId);
       _cache[rocketId] = rocket;
       emit(RocketState(loading: false, rocket: rocket));
     } catch (e) {

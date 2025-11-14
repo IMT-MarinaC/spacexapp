@@ -7,22 +7,57 @@ class LaunchState {
   final bool loading;
   final List<Launch> launches;
   final String? error;
+  final String? filteredRocketId;
 
-  LaunchState({this.loading = false, this.launches = const [], this.error});
+  const LaunchState({
+    this.loading = false,
+    this.launches = const [],
+    this.error,
+    this.filteredRocketId,
+  });
+
+  LaunchState copyWith({
+    bool? loading,
+    List<Launch>? launches,
+    String? error,
+    String? filteredRocketId,
+  }) {
+    return LaunchState(
+      loading: loading ?? this.loading,
+      launches: launches ?? this.launches,
+      error: error,
+      filteredRocketId: filteredRocketId,
+    );
+  }
 }
 
 class LaunchCubit extends Cubit<LaunchState> {
-  LaunchCubit() : super(LaunchState(loading: true)) {
+  LaunchCubit() : super(const LaunchState(loading: true)) {
     fetchLaunches();
   }
 
   Future<void> fetchLaunches() async {
     try {
-      emit(LaunchState(loading: true));
+      emit(state.copyWith(loading: true));
       final launches = await getAll();
-      emit(LaunchState(loading: false, launches: launches));
+      emit(state.copyWith(loading: false, launches: launches));
     } catch (e) {
-      emit(LaunchState(loading: false, error: e.toString()));
+      emit(state.copyWith(loading: false, error: e.toString()));
     }
+  }
+
+  void filterByRocket(String rocketId) {
+    emit(state.copyWith(filteredRocketId: rocketId));
+  }
+
+  void clearFilter() {
+    emit(state.copyWith(filteredRocketId: null));
+  }
+
+  List<Launch> get filteredLaunches {
+    if (state.filteredRocketId == null) return state.launches;
+    return state.launches
+        .where((launch) => launch.rocket == state.filteredRocketId)
+        .toList();
   }
 }
