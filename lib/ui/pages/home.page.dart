@@ -3,7 +3,7 @@ import 'package:spacexapp/data/model/launch.model.dart';
 import 'package:spacexapp/ui/widgets/launch_card.widget.dart';
 import 'package:spacexapp/ui/widgets/launch_list_item.widget.dart';
 
-import '../data/api/launch.service.dart';
+import '../../data/api/launch.service.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -29,10 +29,7 @@ class _HomePageState extends State<HomePage> {
     final TextStyle style = Theme.of(context).textTheme.bodyMedium!;
     return Scaffold(
       appBar: AppBar(
-        title: Image.asset(
-          'lib/assets/images/spacex_logo_white.png',
-          width: 200,
-        ),
+        title: Image.asset('assets/images/spacex_logo_white.png', width: 200),
 
         actions: [
           IconButton(
@@ -52,7 +49,7 @@ class _HomePageState extends State<HomePage> {
             Container(
               decoration: BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage('lib/assets/images/background7.jpg'),
+                  image: AssetImage('assets/images/background7.jpg'),
                   fit: BoxFit.cover,
                 ),
               ),

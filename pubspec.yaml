@@ -94,4 +94,4 @@ flutter:
 
 
   assets:
-    - lib/assets/images/ #background2.jpg
+    - assets/images/ #background2.jpg

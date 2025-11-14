@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:spacexapp/data/api/rocket.service.dart';
 import 'package:spacexapp/data/model/launch.model.dart';
-import 'package:spacexapp/ui/data/api/rocket.service.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../data/model/rocket/rocket.model.dart';
