@@ -7,7 +7,7 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../data/model/rocket/rocket.model.dart';
 import '../cubit/favorites/favorites.cubit.dart';
 import '../cubit/favorites/favorites.state.dart';
-import '../widgets/rocket_modal.widget.dart';
+import '../widgets/modals/rocket_detail.modal.dart';
 
 class LaunchDetailPage extends StatelessWidget {
   final Launch launch;

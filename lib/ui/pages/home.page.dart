@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spacexapp/data/model/launch.model.dart';
 import 'package:spacexapp/ui/widgets/launch_card.widget.dart';
 import 'package:spacexapp/ui/widgets/launch_list_item.widget.dart';
 
 import '../../data/api/launch.service.dart';
+import '../services/onboarding.service.dart';
+import '../widgets/onboarding/home_onboarding.widget.dart';
 import 'favorites.page.dart';
 
 class HomePage extends StatefulWidget {
@@ -17,11 +20,22 @@ class _HomePageState extends State<HomePage> {
   late Future<List<Launch>> _launchFuture;
   var isListView = false;
 
+  final favKey = GlobalKey();
+  final switchKey = GlobalKey();
+  final cardKey = GlobalKey();
+  final listKey = GlobalKey();
+
   @override
   void initState() {
     super.initState();
     _launchFuture = getAll().then((list) {
       return list;
+    });
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!await OnboardingService.isDone()) {
+        showHomeOnboarding(context);
+      }
     });
   }
 
@@ -34,6 +48,18 @@ class _HomePageState extends State<HomePage> {
 
         actions: [
           IconButton(
+            icon: const Icon(Icons.info_outline),
+            tooltip: 'Revoir l’onboarding',
+            onPressed: () async {
+              // Reset du flag pour tests
+              final prefs = await SharedPreferences.getInstance();
+              await prefs.setBool('onboarding_done', false);
+
+              showHomeOnboarding(context);
+            },
+          ),
+          IconButton(
+            key: favKey,
             icon: const Icon(Icons.favorite, color: Colors.white),
             tooltip: "Mes favoris",
             onPressed: () {
@@ -46,6 +72,7 @@ class _HomePageState extends State<HomePage> {
             },
           ),
           IconButton(
+            key: switchKey,
             icon: Icon(isListView ? Icons.grid_view : Icons.list),
             tooltip: isListView ? "Afficher en grille" : "Afficher en liste",
             onPressed: () {
