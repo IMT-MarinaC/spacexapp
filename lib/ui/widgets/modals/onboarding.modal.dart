@@ -9,6 +9,7 @@ class OnboardingModal extends StatelessWidget {
   final VoidCallback onNext;
 
   const OnboardingModal({
+    super.key,
     required this.title,
     required this.message,
     required this.icon,
@@ -18,6 +19,7 @@ class OnboardingModal extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dialog(
+      alignment: const Alignment(0, 0.4),
       backgroundColor: Colors.black.withValues(alpha: 0.4),
       insetPadding: const EdgeInsets.all(20),
       child: ClipRRect(
@@ -40,7 +42,6 @@ class OnboardingModal extends StatelessWidget {
                     context,
                   ).textTheme.headlineSmall?.copyWith(color: Colors.white),
                 ),
-                const SizedBox(height: 16),
                 Icon(icon.icon, size: 48, color: Colors.amber),
                 const SizedBox(height: 16),
                 Text(

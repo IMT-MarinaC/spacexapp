@@ -49,8 +49,9 @@ class _FavoritesPageState extends State<FavoritesPage> {
               if (favLaunches.isEmpty) {
                 return Center(
                   child: Text(
-                    "Aucun favori pour le moment ❤️",
+                    "Aucun favori pour le moment 💔\nAjoutez-en depuis la liste des lancements !",
                     style: style.copyWith(color: Colors.grey),
+                    textAlign: TextAlign.center,
                   ),
                 );
               }

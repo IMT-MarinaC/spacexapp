@@ -5,8 +5,8 @@ import 'package:spacexapp/ui/widgets/launch_card.widget.dart';
 import 'package:spacexapp/ui/widgets/launch_list_item.widget.dart';
 
 import '../../data/api/launch.service.dart';
-import '../services/onboarding.service.dart';
-import '../widgets/onboarding/home_onboarding.widget.dart';
+import '../onboarding/home.onboarding.dart';
+import '../onboarding/services/onboarding.service.dart';
 import 'favorites.page.dart';
 
 class HomePage extends StatefulWidget {

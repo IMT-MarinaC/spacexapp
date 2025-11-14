@@ -11,6 +11,8 @@ void main() async {
 
   final prefs = await SharedPreferences.getInstance();
   final hasSeenOnboarding = prefs.getBool('onboarding_done') ?? false;
+  final hasSeenRocketOnboarding =
+      prefs.getBool('rocket_detail_onboarding_done') ?? false;
 
   runApp(
     MultiBlocProvider(

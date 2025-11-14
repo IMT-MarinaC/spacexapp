@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:spacexapp/data/api/rocket.service.dart';
 import 'package:spacexapp/data/model/launch.model.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -7,12 +8,36 @@ import 'package:url_launcher/url_launcher.dart';
 import '../../data/model/rocket/rocket.model.dart';
 import '../cubit/favorites/favorites.cubit.dart';
 import '../cubit/favorites/favorites.state.dart';
+import '../onboarding/launch_detail.onboarding.dart';
+import '../onboarding/services/rocket_detail.onboarding.service.dart';
 import '../widgets/modals/rocket_detail.modal.dart';
 
-class LaunchDetailPage extends StatelessWidget {
+class LaunchDetailPage extends StatefulWidget {
   final Launch launch;
 
   const LaunchDetailPage({super.key, required this.launch});
+
+  @override
+  State<LaunchDetailPage> createState() => _LaunchDetailPageState();
+}
+
+class _LaunchDetailPageState extends State<LaunchDetailPage> {
+  Launch get launch => widget.launch;
+  bool highlightRocketName = false;
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!await RocketDetailOnboardingService.isDone()) {
+        showRocketDetailOnboarding(
+          context,
+          onHighlightRocketName: (value) =>
+              setState(() => highlightRocketName = value),
+        );
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -86,6 +111,21 @@ class LaunchDetailPage extends StatelessWidget {
           ),
         ],*/
         actions: [
+          IconButton(
+            icon: const Icon(Icons.info_outline),
+            tooltip: 'Revoir l’onboarding',
+            onPressed: () async {
+              final prefs = await SharedPreferences.getInstance();
+              await prefs.setBool('rocket_detail_onboarding_done', false);
+              if (!await RocketDetailOnboardingService.isDone()) {
+                showRocketDetailOnboarding(
+                  context,
+                  onHighlightRocketName: (value) =>
+                      setState(() => highlightRocketName = value),
+                );
+              }
+            },
+          ),
           BlocBuilder<FavoritesCubit, FavoritesState>(
             builder: (context, state) {
               final isFav = state.favoritesIds.contains(launch.id);
@@ -130,7 +170,7 @@ class LaunchDetailPage extends StatelessWidget {
               ),
             const SizedBox(height: 20),
 
-            // 1ere setion - name, date, succès, num de vol
+            // 1ere setion - fusée, date, succès, num de vol
             Center(
               child: Column(
                 children: [
@@ -166,7 +206,9 @@ class LaunchDetailPage extends StatelessWidget {
                           rocket.name,
                           style: const TextStyle(color: Colors.black),
                         ),
-                        backgroundColor: Colors.white,
+                        backgroundColor: highlightRocketName
+                            ? Colors.amber
+                            : Colors.white,
                         onPressed: () => showRocketModal(context, rocket),
                       );
                     },

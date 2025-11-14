@@ -1,17 +1,42 @@
 import 'package:flutter/material.dart';
 
-import '../../services/onboarding.service.dart';
-import 'home_onboarding.modal.dart';
+import '../widgets/modals/onboarding.modal.dart';
+import 'services/onboarding.service.dart';
 
 void showHomeOnboarding(
   BuildContext context, {
   required void Function(bool) onHighlightFav,
   required void Function(bool) onHighlightSwitch,
 }) {
-  _showStep1(
+  _showStep0(
     context,
     onHighlightFav: onHighlightFav,
     onHighlightSwitch: onHighlightSwitch,
+  );
+}
+
+void _showStep0(
+  BuildContext context, {
+  required void Function(bool) onHighlightFav,
+  required void Function(bool) onHighlightSwitch,
+}) {
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (_) => OnboardingModal(
+      title: "Bienvenue",
+      message:
+          "Découvrez comment utiliser cette application et ses fonctions principales :) \nElle vous présente des lancements spatiaux effectués par Space X.",
+      icon: const Icon(Icons.info_outline_rounded, color: Colors.transparent),
+      onNext: () {
+        Navigator.pop(context);
+        _showStep1(
+          context,
+          onHighlightFav: onHighlightFav,
+          onHighlightSwitch: onHighlightSwitch,
+        );
+      },
+    ),
   );
 }
 
