@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:spacexapp/data/api/rocket.service.dart';
 import 'package:spacexapp/data/model/launch.model.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../data/model/rocket/rocket.model.dart';
+import '../cubit/favorites/favorites.cubit.dart';
+import '../cubit/favorites/favorites.state.dart';
 import '../widgets/rocket_modal.widget.dart';
 
 class LaunchDetailPage extends StatelessWidget {
@@ -14,7 +17,6 @@ class LaunchDetailPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context).textTheme;
-    var isFavorite = false;
 
     return Scaffold(
       appBar: AppBar(
@@ -22,8 +24,7 @@ class LaunchDetailPage extends StatelessWidget {
         backgroundColor: Colors.transparent,
         elevation: 0,
 
-        // ⭐ FAVORIS — inchangé
-        actions: [
+        /*actions: [
           IconButton(
             icon: Icon(
               isFavorite ? Icons.favorite : Icons.favorite_border,
@@ -80,6 +81,34 @@ class LaunchDetailPage extends StatelessWidget {
                   behavior: SnackBarBehavior.floating,
                   backgroundColor: Colors.black.withValues(alpha: 0.7),
                 ),
+              );
+            },
+          ),
+        ],*/
+        actions: [
+          BlocBuilder<FavoritesCubit, FavoritesState>(
+            builder: (context, state) {
+              final isFav = state.favoritesIds.contains(launch.id);
+
+              return IconButton(
+                icon: Icon(
+                  isFav ? Icons.favorite : Icons.favorite_border,
+                  color: isFav ? Colors.red : Colors.white,
+                ),
+                onPressed: () {
+                  context.read<FavoritesCubit>().toggleFavorite(launch.id);
+
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        isFav
+                            ? "${launch.name} retiré des favoris 💔"
+                            : "${launch.name} ajouté aux favoris ❤️",
+                      ),
+                      duration: const Duration(seconds: 1),
+                    ),
+                  );
+                },
               );
             },
           ),
@@ -290,29 +319,6 @@ class LaunchDetailPage extends StatelessWidget {
 
             const SizedBox(height: 50),
           ],
-        ),
-      ),
-    );
-  }
-
-  // utils
-  Widget _buildLink(BuildContext context, String label, String? url) {
-    if (url == null) return const SizedBox.shrink();
-    return InkWell(
-      onTap: () async {
-        final uri = Uri.parse(url);
-        if (await canLaunchUrl(uri)) {
-          await launchUrl(uri, mode: LaunchMode.externalApplication);
-        }
-      },
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 4),
-        child: Text(
-          label,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            color: Colors.blueAccent,
-            decoration: TextDecoration.underline,
-          ),
         ),
       ),
     );

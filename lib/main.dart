@@ -1,10 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:spacexapp/ui/cubit/favorites/favorites.cubit.dart';
 import 'package:spacexapp/ui/pages/home.page.dart';
 
 void main() async {
   await initializeDateFormatting('fr_FR');
-  runApp(const MyApp());
+  runApp(
+    MultiBlocProvider(
+      providers: [BlocProvider(create: (_) => FavoritesCubit())],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
