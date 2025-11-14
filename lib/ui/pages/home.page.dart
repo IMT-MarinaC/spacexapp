@@ -20,10 +20,8 @@ class _HomePageState extends State<HomePage> {
   late Future<List<Launch>> _launchFuture;
   var isListView = false;
 
-  final favKey = GlobalKey();
-  final switchKey = GlobalKey();
-  final cardKey = GlobalKey();
-  final listKey = GlobalKey();
+  bool highlightFav = false;
+  bool highlightSwitch = false;
 
   @override
   void initState() {
@@ -59,7 +57,6 @@ class _HomePageState extends State<HomePage> {
             },
           ),
           IconButton(
-            key: favKey,
             icon: const Icon(Icons.favorite, color: Colors.white),
             tooltip: "Mes favoris",
             onPressed: () {
@@ -72,7 +69,6 @@ class _HomePageState extends State<HomePage> {
             },
           ),
           IconButton(
-            key: switchKey,
             icon: Icon(isListView ? Icons.grid_view : Icons.list),
             tooltip: isListView ? "Afficher en grille" : "Afficher en liste",
             onPressed: () {
