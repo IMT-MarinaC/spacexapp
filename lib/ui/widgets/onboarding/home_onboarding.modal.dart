@@ -5,11 +5,13 @@ import 'package:flutter/material.dart';
 class OnboardingModal extends StatelessWidget {
   final String title;
   final String message;
+  final Icon icon;
   final VoidCallback onNext;
 
   const OnboardingModal({
     required this.title,
     required this.message,
+    required this.icon,
     required this.onNext,
   });
 
@@ -39,10 +41,12 @@ class OnboardingModal extends StatelessWidget {
                   ).textTheme.headlineSmall?.copyWith(color: Colors.white),
                 ),
                 const SizedBox(height: 16),
+                Icon(icon.icon, size: 48, color: Colors.amber),
+                const SizedBox(height: 16),
                 Text(
                   message,
                   style: TextStyle(color: Colors.grey, fontSize: 16),
-                  textAlign: TextAlign.center,
+                  textAlign: TextAlign.start,
                 ),
                 const SizedBox(height: 20),
                 ElevatedButton(

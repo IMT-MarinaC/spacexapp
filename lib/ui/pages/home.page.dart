@@ -32,7 +32,11 @@ class _HomePageState extends State<HomePage> {
 
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       if (!await OnboardingService.isDone()) {
-        showHomeOnboarding(context);
+        showHomeOnboarding(
+          context,
+          onHighlightFav: (value) => setState(() => highlightFav = value),
+          onHighlightSwitch: (value) => setState(() => highlightSwitch = value),
+        );
       }
     });
   }
@@ -53,11 +57,19 @@ class _HomePageState extends State<HomePage> {
               final prefs = await SharedPreferences.getInstance();
               await prefs.setBool('onboarding_done', false);
 
-              showHomeOnboarding(context);
+              showHomeOnboarding(
+                context,
+                onHighlightFav: (value) => setState(() => highlightFav = value),
+                onHighlightSwitch: (value) =>
+                    setState(() => highlightSwitch = value),
+              );
             },
           ),
           IconButton(
-            icon: const Icon(Icons.favorite, color: Colors.white),
+            icon: Icon(
+              Icons.favorite,
+              color: highlightFav ? Colors.amber : Colors.white,
+            ),
             tooltip: "Mes favoris",
             onPressed: () {
               Navigator.push(
@@ -69,7 +81,11 @@ class _HomePageState extends State<HomePage> {
             },
           ),
           IconButton(
-            icon: Icon(isListView ? Icons.grid_view : Icons.list),
+            icon: Icon(
+              isListView ? Icons.grid_view : Icons.format_list_bulleted_rounded,
+              color: highlightSwitch ? Colors.amber : Colors.white,
+              size: 24,
+            ),
             tooltip: isListView ? "Afficher en grille" : "Afficher en liste",
             onPressed: () {
               setState(() {
